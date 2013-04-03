@@ -1,7 +1,0 @@
-#!/bin/bash -e
-
-# Relax connection permissions.
-mysql -u root --password=password \
-  -e "grant all privileges on *.* to 'root'@'%' IDENTIFIED BY 'password';"
-
-touch /root/mysql.done

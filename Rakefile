@@ -5,13 +5,14 @@ def target(box)
    return "output/#{box}.box"
 end
 
-boxes = [
-  'apache2_precise64', 'nginx_precise64',
-  'elasticsearch_precise64', 'mongodb_precise64', 'mysql_precise64', 'infinidb_precise64', 'neo4j_precise64', 'postgres_precise64',
-  'hadoop_precise64',  'hadoop2_precise64', 'zookeeper_precise64',
-  'r_precise64', 'sage_precise64', 'vowpalwabbit_precise64', 'saiku_precise64',
-  'boxgrinder_precise64', 'dev_precise64'
-]
+boxes = %w(apache2_precise64 nginx_precise64 mongodb_precise64 mysql_precise64 hadoop_precise64 zookeeper_precise64 r_precise64)
+#boxes = [
+#  'apache2_precise64', 'nginx_precise64',
+#  'elasticsearch_precise64', 'mongodb_precise64', 'mysql_precise64', 'infinidb_precise64', 'neo4j_precise64', 'postgres_precise64',
+#  'hadoop_precise64',  'hadoop2_precise64', 'zookeeper_precise64',
+#  'r_precise64', 'sage_precise64', 'vowpalwabbit_precise64', 'saiku_precise64',
+#  'boxgrinder_precise64', 'dev_precise64'
+#]
 
 puppetfiles = FileList['modules/**/*']
 
@@ -22,6 +23,15 @@ puppetfiles = FileList['modules/**/*']
 ################################################################################
 
 task :default => boxes.map { |box| target(box) }
+
+task :box do
+  box = ENV['BOX']
+  sh "vagrant destroy -f #{box}"
+  sh "vagrant box remove #{box} || true"
+  sh "vagrant up #{box}"
+  sh "vagrant package #{box} --output #{target(box)}"
+  sh "vagrant destroy -f #{box}"
+end
 
 task :clean do
   sh 'vagrant destroy -f'
